@@ -1,7 +1,18 @@
 version: 2.1
-orbs:
-  welcome: circleci/welcome-orb@0.4.1
-workflows:
-  welcome:
-    jobs:
-      - welcome/run
+jobs:
+  validate:
+    docker:
+      - image: circleci/rust
+    steps:
+      - checkout
+      - run:
+          name: clippy
+          command: |
+            rustup component add clippy
+            cargo clippy -- -D warnings
+      - run:
+          name: fmt
+          command: cargo fmt -- --check
+      - run:
+          name: test
+          command: cargo test
