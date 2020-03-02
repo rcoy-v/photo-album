@@ -2,7 +2,7 @@ use std::env;
 use std::io::{self};
 use std::process::exit;
 
-use lib::run;
+use lib::run::run;
 
 mod lib;
 

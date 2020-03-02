@@ -3,13 +3,17 @@ use std::io::Write;
 
 use super::photo_collection::*;
 
-fn print_photo_info<W: Write>(writer: &mut W, photos: Vec<Photo>) {
+fn print_photo_info(photos: Vec<Photo>) -> String {
     if photos.is_empty() {
-        writeln!(writer, "no photos found").unwrap();
+        String::from("no photos found\n")
     } else {
+        let mut info = String::new();
+
         for photo in photos {
-            writeln!(writer, "[{}] {}", photo.id, photo.title).unwrap();
+            info = format!("{}[{}] {}\n", info, photo.id, photo.title);
         }
+
+        info
     }
 }
 
@@ -17,44 +21,45 @@ pub fn run<W: Write>(args: Vec<String>, writer: &mut W) -> Result<(), Box<dyn Er
     let album_id = args.get(1).expect("album id not provided");
     let photos = PhotoCollection::get_photos_by_album(album_id)?;
 
-    print_photo_info(writer, photos);
+    writer
+        .write_all(print_photo_info(photos).as_bytes())
+        .unwrap();
 
     Ok(())
 }
 
 #[cfg(test)]
 mod print_photo_info_tests {
-    use std::default::Default;
-    use std::io::Cursor;
-
     use super::*;
 
     #[test]
-    fn should_print_message_when_no_photos() {
-        let mut writer = Cursor::new(Vec::new());
+    fn should_return_formatted_photo_id_and_title() {
+        let photos = vec![
+            Photo {
+                id: 1,
+                title: "foo".to_string(),
+                ..Default::default()
+            },
+            Photo {
+                id: 2,
+                title: "bar".to_string(),
+                ..Default::default()
+            },
+        ];
 
-        print_photo_info(&mut writer, vec![]);
+        let expected = String::from("[1] foo\n[2] bar\n");
 
-        assert_eq!(
-            String::from_utf8(writer.into_inner()).unwrap(),
-            "no photos found\n"
-        )
+        let message = print_photo_info(photos);
+
+        assert_eq!(expected, message);
     }
 
     #[test]
-    fn should_print_each_photos_id_and_title() {
-        let mut writer = Cursor::new(Vec::new());
-        let photos = vec![
-            Photo { id: 1, title: String::from("foo"), ..Default::default()},
-            Photo { id: 2, title: String::from("bar"), ..Default::default()},
-        ];
+    fn should_return_warning_message_when_no_photos() {
+        let photos = vec![];
 
+        let message = print_photo_info(photos);
 
-        print_photo_info(&mut writer, photos);
-
-        assert_eq!(
-            String::from_utf8(writer.into_inner()).unwrap(),
-            "[1] foo\n[2] bar\n"
-        )
+        assert_eq!("no photos found\n", message);
     }
 }
