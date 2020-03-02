@@ -5,3 +5,5 @@ authors = ["rcoy-v <rcoy.vance@pm.me>"]
 edition = "2018"
 
 [dependencies]
+reqwest = { version = "0.10.3", features = ["blocking", "json"]}
+serde = { version = "1.0", features = ["derive"] }
