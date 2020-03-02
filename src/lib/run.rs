@@ -1,32 +1,7 @@
 use std::error::Error;
 use std::io::Write;
 
-use reqwest::blocking::get;
-use serde::Deserialize;
-
-#[derive(Deserialize, Debug)]
-struct Photo {
-    #[serde(rename = "albumId")]
-    album_id: usize,
-    id: usize,
-    title: String,
-    url: String,
-    #[serde(rename = "thumbnailUrl")]
-    thumbnail_url: String,
-}
-
-struct PhotoCollection {}
-
-impl PhotoCollection {
-    pub fn get_photos_by_album(album_id: &str) -> Result<Vec<Photo>, reqwest::Error> {
-        let photos_url = &format!(
-            "https://jsonplaceholder.typicode.com/photos?albumId={}",
-            album_id
-        );
-
-        get(photos_url)?.json::<Vec<Photo>>()
-    }
-}
+use super::photo_collection::*;
 
 fn print_photo_info<W: Write>(writer: &mut W, photos: Vec<Photo>) {
     if photos.is_empty() {
@@ -49,12 +24,13 @@ pub fn run<W: Write>(args: Vec<String>, writer: &mut W) -> Result<(), Box<dyn Er
 
 #[cfg(test)]
 mod print_photo_info_tests {
+    use std::default::Default;
     use std::io::Cursor;
 
     use super::*;
 
     #[test]
-    fn when_empty() {
+    fn should_print_message_when_no_photos() {
         let mut writer = Cursor::new(Vec::new());
 
         print_photo_info(&mut writer, vec![]);
@@ -62,6 +38,23 @@ mod print_photo_info_tests {
         assert_eq!(
             String::from_utf8(writer.into_inner()).unwrap(),
             "no photos found\n"
+        )
+    }
+
+    #[test]
+    fn should_print_each_photos_id_and_title() {
+        let mut writer = Cursor::new(Vec::new());
+        let photos = vec![
+            Photo { id: 1, title: String::from("foo"), ..Default::default()},
+            Photo { id: 2, title: String::from("bar"), ..Default::default()},
+        ];
+
+
+        print_photo_info(&mut writer, photos);
+
+        assert_eq!(
+            String::from_utf8(writer.into_inner()).unwrap(),
+            "[1] foo\n[2] bar\n"
         )
     }
 }

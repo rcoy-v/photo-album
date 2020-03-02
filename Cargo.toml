@@ -4,6 +4,9 @@ version = "0.1.0"
 authors = ["rcoy-v <rcoy.vance@pm.me>"]
 edition = "2018"
 
+[lib]
+path = "src/lib/mod.rs"
+
 [dependencies]
 reqwest = { version = "0.10.3", features = ["blocking", "json"]}
 serde = { version = "1.0", features = ["derive"] }
