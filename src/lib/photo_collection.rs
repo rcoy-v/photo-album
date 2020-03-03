@@ -30,8 +30,7 @@ impl PhotoCollection {
         let photos_url = Url::parse_with_params(
             format!("{}/photos", self.url).as_str(),
             &[("albumId", album_id.to_string())],
-        )
-        .unwrap();
+        ).unwrap();
 
         get(photos_url)?.json::<Vec<Photo>>()
     }

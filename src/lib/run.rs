@@ -1,34 +1,64 @@
 use std::error::Error;
+use std::fmt;
 use std::io::Write;
 
 use super::photo_collection::*;
 
-fn print_photo_info(photos: Vec<Photo>) -> String {
+fn print_photo_info<W: Write>(writer: &mut W, photos: Vec<Photo>) {
     if photos.is_empty() {
-        String::from("no photos found\n")
+        writeln!(writer, "no photos found").unwrap();
     } else {
-        let mut info = String::new();
-
         for photo in photos {
-            info = format!("{}[{}] {}\n", info, photo.id, photo.title);
+            writeln!(writer, "[{}] {}", photo.id, photo.title).unwrap();
         }
+    }
+}
 
-        info
+#[derive(Debug)]
+struct ParseError;
+
+impl Error for ParseError {}
+
+impl fmt::Display for ParseError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Parse Error")
+    }
+}
+
+fn parse_album_id(args: Vec<String>) -> Result<usize, ParseError> {
+    match args.get(1) {
+        Some(i) => {
+            match i.parse::<usize>() {
+                Ok(album_id) => {
+                    Ok(album_id)
+                }
+                Err(_) => {
+                    Err(ParseError {})
+                }
+            }
+        }
+        None => {
+            Err(ParseError {})
+        }
     }
 }
 
 pub fn run<W: Write>(args: Vec<String>, writer: &mut W) -> Result<(), Box<dyn Error>> {
-    let album_id = args
-        .get(1)
-        .expect("album id not provided")
-        .parse::<usize>()?;
-    let photos = PhotoCollection::new().get_photos_by_album(album_id)?;
+    let run = || -> Result<(), Box<dyn Error>> {
+        let album_id = parse_album_id(args)?;
+        let photos = PhotoCollection::new().get_photos_by_album(album_id)?;
 
-    writer
-        .write_all(print_photo_info(photos).as_bytes())
-        .unwrap();
+        print_photo_info(writer, photos);
 
-    Ok(())
+        Ok(())
+    };
+
+    if let Err(e) = run() {
+        writeln!(writer, "no photos found").unwrap();
+        Err(e)
+    } else {
+        Ok(())
+    }
 }
 
 #[cfg(test)]
@@ -36,33 +66,29 @@ mod tests {
     use super::*;
 
     #[test]
-    fn should_return_formatted_photo_id_and_title() {
-        let photos = vec![
-            Photo {
-                id: 1,
-                title: "foo".to_string(),
-                ..Default::default()
-            },
-            Photo {
-                id: 2,
-                title: "bar".to_string(),
-                ..Default::default()
-            },
-        ];
+    fn should_use_album_id_if_given() {
+        let args = vec!["test".to_string(), "1".to_string()];
 
-        let expected = String::from("[1] foo\n[2] bar\n");
+        let album_id = parse_album_id(args).unwrap();
 
-        let message = print_photo_info(photos);
-
-        assert_eq!(expected, message);
+        assert_eq!(1, album_id);
     }
 
     #[test]
-    fn should_return_warning_message_when_no_photos() {
-        let photos = vec![];
+    fn should_err_if_no_album_id_given() {
+        let args = vec!["test".to_string()];
 
-        let message = print_photo_info(photos);
+        let result = parse_album_id(args);
 
-        assert_eq!("no photos found\n", message);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn should_err_if_invalid_album_id_given() {
+        let args = vec!["test".to_string(), "foo".to_string()];
+
+        let result = parse_album_id(args);
+
+        assert!(result.is_err());
     }
 }
