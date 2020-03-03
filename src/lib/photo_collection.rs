@@ -30,7 +30,8 @@ impl PhotoCollection {
         let photos_url = Url::parse_with_params(
             format!("{}/photos", self.url).as_str(),
             &[("albumId", album_id.to_string())],
-        ).unwrap();
+        )
+        .unwrap();
 
         get(photos_url)?.json::<Vec<Photo>>()
     }
@@ -67,7 +68,7 @@ mod test {
             .with_body(serde_json::to_string(expected_photos).unwrap())
             .create();
         let photo_collection = PhotoCollection {
-            url: mockito::server_url()
+            url: mockito::server_url(),
         };
 
         let photos = photo_collection.get_photos_by_album(album_id).unwrap();
@@ -87,7 +88,7 @@ mod test {
             .with_body("[]")
             .create();
         let photo_collection = PhotoCollection {
-            url: mockito::server_url()
+            url: mockito::server_url(),
         };
 
         let photos = photo_collection.get_photos_by_album(album_id).unwrap();
