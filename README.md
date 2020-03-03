@@ -15,7 +15,7 @@ Most commands will refer to `make`.
 If `make` is not installed, copy the commands in [makefile](makefile),
 and run them directly in the terminal.
 
-### docker
+### Docker
 
 This only requires that [Docker](https://docs.docker.com/) be installed and running.
 
@@ -26,7 +26,7 @@ Building the Docker image runs linter, format check, and all tests
 before building a binary with release profile.
 This will take a few minutes the first time it is ran.
 
-### source
+### From Source
 
 To run everything from source, the following tools need to be setup:
 
