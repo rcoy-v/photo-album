@@ -57,14 +57,14 @@ mod test {
         let album_id = 1;
         let expected_photos = &vec![
             Photo {
-                album_id: album_id,
+                album_id,
                 id: 1,
                 title: "".to_string(),
                 url: "".to_string(),
                 thumbnail_url: "".to_string(),
             },
             Photo {
-                album_id: album_id,
+                album_id,
                 id: 2,
                 title: "".to_string(),
                 url: "".to_string(),
