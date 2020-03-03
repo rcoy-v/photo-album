@@ -31,10 +31,15 @@ workflows:
   version: 2
   workflow:
     jobs:
-      - test
+      - test:
+          filters:
+            tags:
+              only: /.*/
       - build:
           requires:
             - test
           filters:
             tags:
-              only: /^v\d+.\d+.\d+$/
+              only: /^v.*/
+            branches:
+              ignore: /.*/
