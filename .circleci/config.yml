@@ -1,6 +1,6 @@
 version: 2.1
 jobs:
-  build:
+  test:
     docker:
       - image: circleci/rust
     steps:
@@ -16,3 +16,25 @@ jobs:
       - run:
           name: test
           command: cargo test --features mock
+  build:
+    docker:
+      - image: circleci/rust
+    steps:
+      - checkout
+      - run:
+          name: build
+          command: cargo build
+      - store_artifacts:
+          path: "target/debug/photo-album"
+
+workflows:
+  version: 2
+  workflow:
+    jobs:
+      - test
+      - build:
+          requires:
+            - test
+          filters:
+            tags:
+              only: /^v\d+.\d+.\d+$/
