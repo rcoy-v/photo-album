@@ -30,9 +30,7 @@ impl PhotoCollection {
         #[cfg(not(feature = "mock"))]
         let url = "https://jsonplaceholder.typicode.com".to_string();
 
-        PhotoCollection {
-            url
-        }
+        PhotoCollection { url }
     }
 
     pub fn get_photos_by_album(&self, album_id: usize) -> Result<Vec<Photo>, reqwest::Error> {

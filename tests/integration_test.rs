@@ -1,7 +1,7 @@
 use std::fs;
 use std::io::Cursor;
 
-use mockito::{Mock, Matcher};
+use mockito::{Matcher, Mock};
 
 use photo_album::run::run;
 
@@ -34,7 +34,6 @@ mod when_photos_found {
             .with_body(response)
             .create();
 
-
         Setup::new(vec!["test".to_string(), matching_album_id], mock)
     }
 
@@ -57,7 +56,6 @@ mod when_photos_found {
         assert_eq!(expected, String::from_utf8(s.writer.into_inner()).unwrap());
     }
 }
-
 
 mod when_no_matching_photos {
     use super::*;
@@ -101,9 +99,7 @@ mod when_album_id_not_given {
 
     fn setup() -> Setup {
         let args = vec!["test".to_string()];
-        let mock = mockito::mock("GET", "/photos")
-            .expect_at_most(0)
-            .create();
+        let mock = mockito::mock("GET", "/photos").expect_at_most(0).create();
 
         Setup::new(args, mock)
     }
@@ -145,9 +141,7 @@ mod when_album_id_not_parsable {
     fn setup() -> Setup {
         let not_parsable_album = "foo123";
         let args = vec!["test".to_string(), not_parsable_album.to_string()];
-        let mock = mockito::mock("GET", "/photos")
-            .expect_at_most(0)
-            .create();
+        let mock = mockito::mock("GET", "/photos").expect_at_most(0).create();
 
         Setup::new(args, mock)
     }
@@ -189,9 +183,7 @@ mod when_http_get_fails {
     fn setup() -> Setup {
         let any_album = "123";
         let args = vec!["test".to_string(), any_album.to_string()];
-        let mock = mockito::mock("GET", Matcher::Any)
-            .with_status(500)
-            .create();
+        let mock = mockito::mock("GET", Matcher::Any).with_status(500).create();
 
         Setup::new(args, mock)
     }
