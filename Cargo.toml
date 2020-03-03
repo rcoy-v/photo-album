@@ -8,6 +8,9 @@ edition = "2018"
 path = "src/lib/mod.rs"
 doctest = false
 
+[features]
+mock = []
+
 [[bin]]
 name = "photo-album"
 path = "src/main.rs"

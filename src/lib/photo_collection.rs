@@ -4,6 +4,9 @@ use reqwest::blocking::get;
 use reqwest::Url;
 use serde::{Deserialize, Serialize};
 
+#[cfg(feature = "mock")]
+use mockito;
+
 #[derive(Serialize, Deserialize, Debug, Default, PartialEq)]
 pub struct Photo {
     #[serde(rename = "albumId")]
@@ -21,8 +24,18 @@ pub struct PhotoCollection {
 
 impl PhotoCollection {
     pub fn new() -> PhotoCollection {
+        #[cfg(feature = "mock")]
+        let url = mockito::server_url();
+
+        #[cfg(not(feature = "mock"))]
+        let url = "https://jsonplaceholder.typicode.com".to_string();
+
+        // if cfg!(not(feature = "mock")) {
+        //     assert!(false)
+        // }
+
         PhotoCollection {
-            url: "https://jsonplaceholder.typicode.com".to_string(),
+            url
         }
     }
 
@@ -67,9 +80,7 @@ mod test {
             .with_status(200)
             .with_body(serde_json::to_string(expected_photos).unwrap())
             .create();
-        let photo_collection = PhotoCollection {
-            url: mockito::server_url(),
-        };
+        let photo_collection = PhotoCollection::new();
 
         let photos = photo_collection.get_photos_by_album(album_id).unwrap();
 
@@ -87,9 +98,7 @@ mod test {
             .with_status(200)
             .with_body("[]")
             .create();
-        let photo_collection = PhotoCollection {
-            url: mockito::server_url(),
-        };
+        let photo_collection = PhotoCollection::new();
 
         let photos = photo_collection.get_photos_by_album(album_id).unwrap();
 
