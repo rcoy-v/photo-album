@@ -1,4 +1,4 @@
-FROM rust:1 as builder
+FROM rust:1
 WORKDIR /usr/src/photo-album
 COPY . .
 
