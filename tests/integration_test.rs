@@ -26,10 +26,7 @@ fn should_print_info_for_found_photos() {
     let result = run(args, &mut writer);
 
     assert!(result.is_ok());
-    assert_eq!(
-        expected,
-        String::from_utf8(writer.into_inner()).unwrap(),
-    );
+    assert_eq!(expected, String::from_utf8(writer.into_inner()).unwrap(),);
 }
 
 #[test]

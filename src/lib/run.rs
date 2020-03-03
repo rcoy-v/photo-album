@@ -27,19 +27,11 @@ impl fmt::Display for ParseError {
 
 fn parse_album_id(args: Vec<String>) -> Result<usize, ParseError> {
     match args.get(1) {
-        Some(i) => {
-            match i.parse::<usize>() {
-                Ok(album_id) => {
-                    Ok(album_id)
-                }
-                Err(_) => {
-                    Err(ParseError {})
-                }
-            }
-        }
-        None => {
-            Err(ParseError {})
-        }
+        Some(i) => match i.parse::<usize>() {
+            Ok(album_id) => Ok(album_id),
+            Err(_) => Err(ParseError {}),
+        },
+        None => Err(ParseError {}),
     }
 }
 
