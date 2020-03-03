@@ -15,6 +15,16 @@ Most commands will refer to `make`.
 If `make` is not installed, copy the commands in [makefile](makefile),
 and run them directly in the terminal.
 
+### Pre-built Binary
+
+> Linux is the only current platform with a pre-built binary
+
+1. Go to [latest release page](https://github.com/rcoy-v/photo-album/releases/latest) 
+and download the `photo-album` under assets.
+1. `cd` to download folder.
+1. `chmod +x ./photo-album`
+1. `./photo-album 1` 
+
 ### Docker
 
 This only requires that [Docker](https://docs.docker.com/) be installed and running.
