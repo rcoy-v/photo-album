@@ -11,7 +11,7 @@ This uses https://jsonplaceholder.typicode.com as the photo store.
 There are multiple options for running this project.
 This will mostly depend on what tools you want to install.
 
-Most options will refer to `make`.
+Most commands will refer to `make`.
 If `make` is not installed, copy the commands in [makefile](makefile),
 and run them directly in the terminal.
 
