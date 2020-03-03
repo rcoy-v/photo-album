@@ -46,7 +46,7 @@ pub fn run<W: Write>(args: Vec<String>, writer: &mut W) -> Result<(), Box<dyn Er
     };
 
     if let Err(e) = run() {
-        writeln!(writer, "no photos found").unwrap();
+        writeln!(writer, "error finding photos").unwrap();
         Err(e)
     } else {
         Ok(())

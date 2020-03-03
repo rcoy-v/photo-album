@@ -3,60 +3,140 @@ use std::io::Cursor;
 
 use photo_album::run::run;
 
-#[test]
-fn should_print_message_when_no_photos() {
-    let mut writer = create_writer();
-    let args = vec!["test".to_string(), "10000".to_string()];
-
-    let result = run(args, &mut writer);
-
-    assert!(result.is_ok());
-    assert_eq!(
-        String::from_utf8(writer.into_inner()).unwrap(),
-        "no photos found\n"
-    );
+struct Setup {
+    writer: Cursor<Vec<u8>>,
+    args: Vec<String>,
 }
 
-#[test]
-fn should_print_info_for_found_photos() {
-    let mut writer = create_writer();
-    let args = vec!["test".to_string(), "50".to_string()];
-    let expected = fs::read_to_string("tests/data/photos.txt").unwrap();
-
-    let result = run(args, &mut writer);
-
-    assert!(result.is_ok());
-    assert_eq!(expected, String::from_utf8(writer.into_inner()).unwrap(),);
+impl Setup {
+    fn new(args: Vec<String>) -> Setup {
+        Setup {
+            writer: Cursor::new(Vec::new()),
+            args,
+        }
+    }
 }
 
-#[test]
-fn should_print_error_message_when_missing_argument() {
-    let mut writer = create_writer();
-    let args = vec!["test".to_string()];
+mod when_photos_found {
+    use super::*;
 
-    let result = run(args, &mut writer);
+    fn setup() -> Setup {
+        let matching_album_id = "50".to_string();
 
-    assert!(result.is_err());
-    assert_eq!(
-        "no photos found\n".to_string(),
-        String::from_utf8(writer.into_inner()).unwrap(),
-    );
+        Setup::new(vec!["test".to_string(), matching_album_id])
+    }
+
+    #[test]
+    fn should_return_ok() {
+        let mut s = setup();
+
+        let result = run(s.args, &mut s.writer);
+
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn should_print_photo_information() {
+        let mut s = setup();
+        let expected = fs::read_to_string("tests/data/photos_50.txt").unwrap();
+
+        let _result = run(s.args, &mut s.writer);
+
+        assert_eq!(expected, String::from_utf8(s.writer.into_inner()).unwrap());
+    }
 }
 
-#[test]
-fn should_print_error_message_when_album_id_not_parsable() {
-    let mut writer = create_writer();
-    let args = vec!["test".to_string(), "foo".to_string()];
+mod when_no_matching_photos {
+    use super::*;
 
-    let result = run(args, &mut writer);
+    fn setup() -> Setup {
+        let empty_album = "10000".to_string();
+        let args = vec!["test".to_string(), empty_album];
 
-    assert!(result.is_err());
-    assert_eq!(
-        "no photos found\n".to_string(),
-        String::from_utf8(writer.into_inner()).unwrap(),
-    );
+        Setup::new(args)
+    }
+
+    #[test]
+    fn should_return_ok() {
+        let mut s = setup();
+
+        let result = run(s.args, &mut s.writer);
+
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn should_print_no_photos_found() {
+        let mut s = setup();
+
+        let _result = run(s.args, &mut s.writer);
+
+        assert_eq!(
+            String::from_utf8(s.writer.into_inner()).unwrap(),
+            "no photos found\n"
+        );
+    }
 }
 
-fn create_writer() -> Cursor<Vec<u8>> {
-    Cursor::new(Vec::new())
+mod when_album_id_not_given {
+    use super::*;
+
+    fn setup() -> Setup {
+        let args = vec!["test".to_string()];
+
+        Setup::new(args)
+    }
+
+    #[test]
+    fn should_return_error() {
+        let mut s = setup();
+
+        let result = run(s.args, &mut s.writer);
+
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn should_print_error_finding_photos() {
+        let mut s = setup();
+
+        let _result = run(s.args, &mut s.writer);
+
+        assert_eq!(
+            "error finding photos\n".to_string(),
+            String::from_utf8(s.writer.into_inner()).unwrap(),
+        );
+    }
+}
+
+mod when_album_id_not_parsable {
+    use super::*;
+
+    fn setup() -> Setup {
+        let not_parsable_album = "foo123".to_string();
+        let args = vec!["test".to_string(), not_parsable_album];
+
+        Setup::new(args)
+    }
+
+    #[test]
+    fn should_return_error() {
+        let mut s = setup();
+
+        let result = run(s.args, &mut s.writer);
+
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn should_print_error_finding_photos() {
+        let mut s = setup();
+
+        let _result = run(s.args, &mut s.writer);
+
+        assert_eq!(
+            "error finding photos\n".to_string(),
+            String::from_utf8(s.writer.into_inner()).unwrap(),
+        );
+    }
 }
