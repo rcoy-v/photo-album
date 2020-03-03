@@ -6,6 +6,12 @@ edition = "2018"
 
 [lib]
 path = "src/lib/mod.rs"
+doctest = false
+
+[[bin]]
+name = "photo-album"
+path = "src/main.rs"
+test = false
 
 [dependencies]
 reqwest = { version = "0.10.3", features = ["blocking", "json"]}

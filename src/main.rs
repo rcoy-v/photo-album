@@ -4,15 +4,14 @@ use std::process::exit;
 
 use lib::run::run;
 
-mod lib;
+pub mod lib;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
 
     match run(args, &mut io::stdout()) {
         Ok(()) => {}
-        Err(e) => {
-            eprintln!("error: {}", e);
+        Err(_) => {
             exit(1);
         }
     }
