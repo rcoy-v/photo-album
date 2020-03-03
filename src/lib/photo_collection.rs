@@ -4,6 +4,9 @@ use reqwest::blocking::get;
 use reqwest::Url;
 use serde::{Deserialize, Serialize};
 
+#[cfg(feature = "mock")]
+use mockito;
+
 #[derive(Serialize, Deserialize, Debug, Default, PartialEq)]
 pub struct Photo {
     #[serde(rename = "albumId")]
@@ -21,9 +24,13 @@ pub struct PhotoCollection {
 
 impl PhotoCollection {
     pub fn new() -> PhotoCollection {
-        PhotoCollection {
-            url: "https://jsonplaceholder.typicode.com".to_string(),
-        }
+        #[cfg(feature = "mock")]
+        let url = mockito::server_url();
+
+        #[cfg(not(feature = "mock"))]
+        let url = "https://jsonplaceholder.typicode.com".to_string();
+
+        PhotoCollection { url }
     }
 
     pub fn get_photos_by_album(&self, album_id: usize) -> Result<Vec<Photo>, reqwest::Error> {
@@ -48,14 +55,14 @@ mod test {
         let album_id = 1;
         let expected_photos = &vec![
             Photo {
-                album_id: album_id,
+                album_id,
                 id: 1,
                 title: "".to_string(),
                 url: "".to_string(),
                 thumbnail_url: "".to_string(),
             },
             Photo {
-                album_id: album_id,
+                album_id,
                 id: 2,
                 title: "".to_string(),
                 url: "".to_string(),
@@ -67,9 +74,7 @@ mod test {
             .with_status(200)
             .with_body(serde_json::to_string(expected_photos).unwrap())
             .create();
-        let photo_collection = PhotoCollection {
-            url: mockito::server_url(),
-        };
+        let photo_collection = PhotoCollection::new();
 
         let photos = photo_collection.get_photos_by_album(album_id).unwrap();
 
@@ -87,9 +92,7 @@ mod test {
             .with_status(200)
             .with_body("[]")
             .create();
-        let photo_collection = PhotoCollection {
-            url: mockito::server_url(),
-        };
+        let photo_collection = PhotoCollection::new();
 
         let photos = photo_collection.get_photos_by_album(album_id).unwrap();
 
