@@ -1,6 +1,6 @@
 [package]
 name = "photo-album"
-version = "0.1.0"
+version = "1.0.0"
 authors = ["rcoy-v <rcoy.vance@pm.me>"]
 edition = "2018"
 
