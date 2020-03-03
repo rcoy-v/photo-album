@@ -36,7 +36,7 @@ To run everything from source, the following tools need to be setup:
 1. Verify everything is installed correctly.
     1. `rustc --version`
     1. `cargo --version`
-1. `rustup component install clipper-preview`. Installs the linter.
+1. `rustup component install clippey-preview`. Installs the linter.
 1. `rustup component install rustfmt`. Install the formatter.
 
 Now all tools are installed to run everything:
