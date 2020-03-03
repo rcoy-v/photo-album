@@ -58,6 +58,14 @@ make release
 Builds a fully optimized binary with release profile.
 Can take a few minutes.
 
+#### cargo run
+
+```bash
+cargo run -- 1
+```
+Direct way to run application without building and referencing binary.
+Everything after `--` is passed directly as arguments to the application.
+
 #### make test
 
 ```bash
@@ -68,7 +76,7 @@ Runs the following:
 - Clippy linter
 - rustfmt format check
 - unit tests
-- integration tests.
+- integration tests
 
 #### make fmt
 
