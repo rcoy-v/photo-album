@@ -23,9 +23,9 @@ jobs:
       - checkout
       - run:
           name: build
-          command: cargo build
+          command: cargo build --release
       - store_artifacts:
-          path: "target/debug/photo-album"
+          path: "target/release/photo-album"
 
 workflows:
   version: 2
