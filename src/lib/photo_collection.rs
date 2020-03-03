@@ -30,10 +30,6 @@ impl PhotoCollection {
         #[cfg(not(feature = "mock"))]
         let url = "https://jsonplaceholder.typicode.com".to_string();
 
-        // if cfg!(not(feature = "mock")) {
-        //     assert!(false)
-        // }
-
         PhotoCollection {
             url
         }
