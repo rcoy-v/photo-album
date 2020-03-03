@@ -18,18 +18,19 @@ fn print_photo_info(photos: Vec<Photo>) -> String {
 }
 
 pub fn run<W: Write>(args: Vec<String>, writer: &mut W) -> Result<(), Box<dyn Error>> {
-    let album_id = args.get(1).expect("album id not provided");
-    let photos = PhotoCollection::get_photos_by_album(album_id)?;
+    let album_id = args.get(1)
+        .expect("album id not provided")
+        .parse::<usize>()?;
+    let photos = PhotoCollection::new().get_photos_by_album(album_id)?;
 
-    writer
-        .write_all(print_photo_info(photos).as_bytes())
+    writer.write_all(print_photo_info(photos).as_bytes())
         .unwrap();
 
     Ok(())
 }
 
 #[cfg(test)]
-mod print_photo_info_tests {
+mod tests {
     use super::*;
 
     #[test]
